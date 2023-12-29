@@ -1,2 +1,4 @@
-fastapi
+fastapi~=0.108.0
 uvicorn
+torch~=2.1.2
+transformers~=4.36.2
