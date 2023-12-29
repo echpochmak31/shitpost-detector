@@ -1,12 +1,11 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 templates = Jinja2Templates(directory="frontend")
 
-# Mount the 'frontend' directory
+# Монтируем статические файлы из каталога frontend на корень /frontend
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 @app.get("/")
@@ -15,11 +14,9 @@ async def root(request: Request):
 
 @app.post("/check_post")
 async def check_post(message: str = Form(...)):
-    # Redirect to the /result route with the status as a query parameter
-    status = "говно" not in message.lower()
-    return RedirectResponse(url=f"/result?status={status}")
+    return {"status": "true" if "говно" not in message.lower() else "false"}
 
 @app.get("/result")
-async def show_result(request: Request, status: bool):
-    # Convert the 'status' query parameter to a boolean and render the template
-    return templates.TemplateResponse("result.html", {"request": request, "status": status})
+async def show_result(request: Request, status: str):
+    status_bool = status.lower() == "true"  # Преобразование строки в булево значение
+    return templates.TemplateResponse("result.html", {"request": request, "status": status_bool})
